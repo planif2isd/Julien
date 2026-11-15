@@ -1,0 +1,959 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Qui veut gagner des millions ?</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&display=swap">
+<style>
+/* Layout : question et réponses à gauche, échelle des gains à droite. Un seul univers : noir, blanc, jaune abeille. */
+:root{--noir:#000;--fond:#15130a;--blanc:#fff;--jaune:#ffcc00;--miel:#a88600;--gris:#a8a393;--survol:#2b2500;--f:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--noir);color:var(--blanc);font-family:var(--f);font-size:16px;line-height:1.4}
+.wrap{max-width:1060px;margin:0 auto;padding-block:18px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top .wrap{padding-block:20px 14px}
+h1{margin:0;font-weight:900;font-size:clamp(1.6rem,5vw,2.9rem);letter-spacing:-.02em;line-height:1.05;text-wrap:balance}
+.raies{height:14px;background:repeating-linear-gradient(-45deg,var(--jaune) 0 18px,var(--noir) 18px 36px)}
+.game{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:26px;align-items:start}
+.main{display:flex;flex-direction:column;gap:14px;min-width:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+.jokers{display:flex;gap:10px;flex-wrap:wrap}
+.joker{border:0;background:var(--jaune);color:var(--noir);font-weight:800;padding:10px 22px;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%)}
+.joker:hover:not(:disabled),.joker:focus-visible{background:var(--blanc);outline:none}
+.joker:disabled{background:#33301f;color:var(--gris);text-decoration:line-through}
+.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--gris);font-weight:600}
+.meta .cat{color:var(--jaune)}
+.qbox{border:2px solid var(--jaune);background:var(--fond);padding:26px 22px;min-height:130px;display:grid;place-items:center;text-align:center;font-weight:600;font-size:clamp(1.15rem,2.6vw,1.5rem);text-wrap:balance}
+.prize{font-weight:900;font-size:clamp(1.4rem,3.4vw,2rem);color:var(--jaune);font-variant-numeric:tabular-nums;text-align:center}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.a{display:grid;width:100%;border:0;padding:2px;background:var(--jaune);text-align:left;clip-path:polygon(18px 0,calc(100% - 18px) 0,100% 50%,calc(100% - 18px) 100%,18px 100%,0 50%)}
+.a>span{display:flex;gap:10px;align-items:baseline;min-height:54px;padding:13px 30px;background:var(--noir);color:var(--blanc);font-weight:600;font-size:1.05rem;clip-path:polygon(17px 0,calc(100% - 17px) 0,100% 50%,calc(100% - 17px) 100%,17px 100%,0 50%)}
+.a b{color:var(--jaune);font-weight:900}
+.a:hover:not(:disabled)>span{background:var(--survol)}
+.a:focus-visible{outline:none;background:var(--blanc)}
+.a.sel{background:var(--blanc)}
+.a.sel>span{background:var(--blanc);color:var(--noir)}
+.a.ok>span{background:var(--jaune);color:var(--noir)}
+.a.sel b,.a.ok b{color:var(--noir)}
+.a.ko{background:var(--gris)}
+.a.ko>span{color:var(--gris);text-decoration:line-through}
+.a.ko b{color:var(--gris)}
+.a.hide{visibility:hidden}
+.info{min-height:66px;background:var(--fond);padding:12px 16px;text-align:center;display:grid;place-items:center}
+.bars{display:flex;gap:14px;justify-content:center;align-items:flex-end;height:104px}
+.bars>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-weight:800}
+.bar{width:46px;background:var(--jaune);color:var(--noir);font-size:.8rem;font-weight:800;display:flex;align-items:flex-end;justify-content:center}
+.walk{align-self:center;background:none;border:0;border-bottom:2px solid var(--gris);padding:6px 2px;color:var(--blanc);font-weight:600}
+.walk:hover,.walk:focus-visible{border-color:var(--jaune);color:var(--jaune);outline:none}
+.walk.arm{color:var(--jaune);border-color:var(--jaune)}
+.ladder{list-style:none;margin:0;padding:0;display:flex;flex-direction:column-reverse;gap:2px;font-variant-numeric:tabular-nums}
+.ladder li{display:flex;justify-content:space-between;gap:10px;padding:5px 12px;color:var(--gris)}
+.ladder li.safe{color:var(--blanc);font-weight:800}
+.ladder li.done{color:var(--miel)}
+.ladder li.cur{background:var(--jaune);color:var(--noir);font-weight:900}
+.end{text-align:center;padding:48px 0;display:flex;flex-direction:column;gap:14px;align-items:center}
+.end h2{margin:0;font-weight:900;font-size:clamp(1.7rem,5vw,2.8rem);text-wrap:balance}
+.end .gain{font-weight:900;font-size:clamp(2.2rem,8vw,4rem);color:var(--jaune);font-variant-numeric:tabular-nums}
+.end p{margin:0;max-width:60ch}
+.cta{border:0;background:var(--jaune);color:var(--noir);font-weight:900;font-size:1.1rem;padding:14px 40px;clip-path:polygon(16px 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,16px 100%,0 50%)}
+.cta:hover,.cta:focus-visible{background:var(--blanc);outline:none}
+.banque{margin:22px 0 0;color:var(--gris);font-size:.9rem}
+.plateau{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.cadre{flex:0 0 clamp(108px,16vw,150px);padding:4px;background:var(--blanc);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.hex{position:relative;aspect-ratio:5/6;background:radial-gradient(circle at 50% 35%,#ffe680,var(--jaune) 55%,var(--miel));overflow:hidden;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.hex canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.tete{position:relative;aspect-ratio:5/6;background:#1c0705;transform-origin:50% 60%}
+.tete img{display:block;width:100%;height:100%;object-fit:cover}
+.tete .haut{clip-path:inset(0 0 27.5% 0)}
+.tete .bas{position:absolute;inset:0;clip-path:inset(72.5% 0 0 0)}
+.bulle{flex:1 1 200px;min-width:0;position:relative;background:var(--blanc);color:var(--noir);font-weight:600;padding:12px 16px;border-radius:14px;min-height:52px;display:flex;align-items:center}
+.bulle::before{content:"";position:absolute;left:-14px;top:50%;transform:translateY(-50%);border:8px solid transparent;border-right-color:var(--blanc)}
+.son{flex:0 0 auto;background:none;border:0;border-bottom:2px solid var(--gris);padding:6px 2px;color:var(--blanc);font-weight:600;text-decoration:none}
+.entete{display:flex;gap:12px 24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.outils{display:flex;gap:20px;flex-wrap:wrap}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px;padding-block:10px}
+.carte{display:flex;gap:18px;align-items:center;padding:20px;border:2px solid var(--jaune);background:var(--fond);color:var(--blanc);text-decoration:none;min-width:0}
+.carte:hover,.carte:focus-visible{background:var(--survol);outline:none;border-color:var(--blanc)}
+.vignette{flex:0 0 84px;aspect-ratio:7/10;background:var(--jaune);overflow:hidden;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.vignette img{width:100%;height:100%;object-fit:fill;display:block}
+.carte .texte{display:flex;flex-direction:column;gap:8px;min-width:0}
+.carte strong{font-weight:900;font-size:1.35rem;line-height:1.15;text-wrap:balance}
+.carte em{font-style:normal;font-weight:800;color:var(--jaune)}
+.pf{display:block;width:100%;max-width:100%;height:auto;aspect-ratio:800/448;border:2px solid var(--jaune);background:var(--noir);touch-action:none}
+.pf:focus-visible{outline:none;border-color:var(--blanc)}
+.manette{display:flex;justify-content:space-between;gap:12px;margin-top:12px;touch-action:none;user-select:none;-webkit-user-select:none}
+.manette span{display:flex;gap:10px}
+.manette button{border:0;background:var(--jaune);color:var(--noir);font-weight:900;font-size:1.05rem;padding:18px 22px;min-width:92px;touch-action:none;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%)}
+.manette button:active{background:var(--blanc)}
+@media (hover:hover) and (pointer:fine){.manette{display:none}}
+.son:hover,.son:focus-visible{border-color:var(--jaune);color:var(--jaune);outline:none}
+@media (prefers-reduced-motion:no-preference){
+  .tete{animation:flotte 4s ease-in-out infinite}
+  .tete.parle .bas{animation:machoire .2s ease-in-out infinite alternate}
+  .tete.oui{animation:oui .9s ease-in-out}
+  .tete.non{animation:non .9s ease-in-out}
+  .tete.suspense{animation:suspense 1.8s linear}
+  .tete.joie{animation:joie 1.1s ease-in-out}
+  .tete.sceptique{animation:sceptique 1.8s ease-in-out}
+  @keyframes flotte{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(1.5%) rotate(1deg)}}
+  @keyframes machoire{from{transform:translateY(0)}to{transform:translateY(5%)}}
+  @keyframes oui{0%,100%{transform:translateY(0)}17%,50%,83%{transform:translateY(7%) scaleY(.96)}33%,67%{transform:translateY(-2%)}}
+  @keyframes non{0%,100%{transform:rotate(0)}17%,50%,83%{transform:rotate(-10deg) translateX(-4%)}33%,67%{transform:rotate(10deg) translateX(4%)}}
+  @keyframes suspense{0%{transform:scale(1)}10%,30%,50%,70%,90%{transform:scale(1.2) translateX(-1.5%)}20%,40%,60%,80%{transform:scale(1.25) translateX(1.5%)}100%{transform:scale(1.3)}}
+  @keyframes joie{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-12%) rotate(-12deg) scale(1.1)}50%{transform:translateY(0) rotate(360deg)}75%{transform:translateY(-8%) rotate(372deg) scale(1.1)}}
+  @keyframes sceptique{0%,100%{transform:rotate(0)}20%,80%{transform:rotate(13deg) translateX(5%) scale(1.08)}}
+}
+@media (max-width:760px){
+  .game{grid-template-columns:minmax(0,1fr)}
+  .ans{grid-template-columns:1fr}
+  .ladder{display:grid;grid-template-columns:repeat(3,1fr)}
+  .ladder li{padding:4px 8px;font-size:.82rem}
+}
+@media (prefers-reduced-motion:no-preference){
+  .a>span{transition:background .15s}
+  .a.ok>span{animation:flash .9s steps(1) 1}
+  @keyframes flash{0%,50%{background:var(--blanc)}25%,75%,100%{background:var(--jaune)}}
+}
+</style>
+<header class="top">
+  <div class="wrap entete">
+    <h1 id="titre">Choisissez votre jeu</h1>
+    <nav class="outils"><a class="son" id="retour" href="#menu" hidden>Retour au menu</a><button class="son" id="son">Couper le son</button></nav>
+  </div>
+  <div class="raies" aria-hidden="true"></div>
+</header>
+<main class="wrap">
+  <section id="vue-menu" class="menu">
+    <a class="carte" href="#millions">
+      <span class="vignette"><img src="visage.webp" alt="" width="512" height="1024"></span>
+      <span class="texte"><strong>Qui veut gagner des millions ?</strong><span>Quinze questions, trois jokers et un animateur qui a réponse à tout.</span><em>Jouer au quiz</em></span>
+    </a>
+    <a class="carte" href="#plateforme">
+      <span class="vignette"><img src="visage.webp" alt="" width="512" height="1024"></span>
+      <span class="texte"><strong>Super Animateur</strong><span>Courez, sautez sur les frelons et ramassez la cagnotte jusqu'à la ruche. Niveau 1.</span><em>Jouer au jeu de plateforme</em></span>
+    </a>
+  </section>
+  <section id="vue-millions" hidden>
+    <div class="plateau" aria-label="Animateur">
+      <div class="cadre"><div class="hex" id="hex"><div class="tete" id="tete"><img class="haut" src="animateur.jpg" alt="L'animateur du jeu"><img class="bas" src="animateur.jpg" alt="" aria-hidden="true"></div></div></div>
+      <div class="bulle" id="bulle" aria-live="polite"></div>
+    </div>
+    <div id="app"></div>
+    <p class="banque" id="banque"></p>
+  </section>
+  <section id="vue-plateforme" hidden>
+    <canvas id="pf" class="pf" width="800" height="448" tabindex="0" aria-label="Jeu de plateforme Super Animateur"></canvas>
+    <div class="manette">
+      <span><button id="pf-g" aria-label="Aller à gauche">Gauche</button><button id="pf-d" aria-label="Aller à droite">Droite</button></span>
+      <button id="pf-s" class="saut" aria-label="Sauter">Saut</button>
+    </div>
+    <p class="banque">Au clavier : flèches gauche et droite (ou Q et D) pour avancer, Espace ou flèche haut pour sauter. Sautez sur les frelons, frappez les blocs € par en dessous et rejoignez le drapeau.</p>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ---------- Outils ---------- */
+const R=n=>Math.floor(Math.random()*n);
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const uniq=a=>[...new Set(a)];
+const others=(pool,ok,n=3)=>sh(uniq(pool).filter(x=>x!==ok)).slice(0,n);
+const fr=n=>n.toLocaleString("fr-FR");
+const maj=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const de=s=>s.startsWith("le ")?"du "+s.slice(3):s.startsWith("les ")?"des "+s.slice(4):(s.startsWith("la ")||s.startsWith("l'"))?"de "+s:/^[AEIOUHÉ]/.test(s)?"d'"+s:"de "+s;
+const nu=s=>s.replace(/^(le |la |les |l')/,"");
+const near=(n,ds)=>uniq(sh(ds.flatMap(d=>[n+d,n-d]).filter(v=>v>0&&v!==n))).slice(0,3);
+const lines=s=>s.trim().split("\n").map(l=>l.trim()).filter(Boolean);
+
+/* ---------- Banque de questions ---------- */
+const CATS={geo:["Géographie",16],hist:["Histoire",14],arts:["Arts et littérature",14],sci:["Sciences",12],sport:["Sport",9],nat:["Nature",8],lang:["Langue",8],div:["Culture générale",11],calc:["Calcul",8]};
+const B={};
+function add(cat,pool,w,t,q,ok,wr){
+  ok=String(ok);wr=wr.map(String);
+  if(wr.length!==3||new Set([ok,...wr]).size!==4)return;
+  B[cat]=B[cat]||{};
+  (B[cat][pool]=B[cat][pool]||{w,qs:[]}).qs.push({c:cat,t:Math.min(3,Math.max(1,t)),q,a:[ok,...wr]});
+}
+
+const PAYS=`
+E=la France|Paris|1;l'Espagne|Madrid|1;l'Italie|Rome|1;l'Allemagne|Berlin|1;le Royaume-Uni|Londres|1;le Portugal|Lisbonne|1;la Belgique|Bruxelles|1;les Pays-Bas|Amsterdam|1;la Grèce|Athènes|1;la Russie|Moscou|1;l'Autriche|Vienne|1;l'Irlande|Dublin|1;la Suisse|Berne|2;la Pologne|Varsovie|2;la Suède|Stockholm|2;la Norvège|Oslo|2;le Danemark|Copenhague|2;la Finlande|Helsinki|2;la Hongrie|Budapest|2;la République tchèque|Prague|2;la Roumanie|Bucarest|2;la Bulgarie|Sofia|2;la Croatie|Zagreb|2;la Serbie|Belgrade|2;l'Ukraine|Kiev|2;la Turquie|Ankara|2;l'Islande|Reykjavik|2;la Slovaquie|Bratislava|3;la Slovénie|Ljubljana|3;l'Estonie|Tallinn|3;la Lettonie|Riga|3;la Lituanie|Vilnius|3;la Biélorussie|Minsk|3;la Moldavie|Chisinau|3;l'Albanie|Tirana|3;la Macédoine du Nord|Skopje|3;la Bosnie-Herzégovine|Sarajevo|3;le Monténégro|Podgorica|3;Malte|La Valette|3;Chypre|Nicosie|3;la Géorgie|Tbilissi|3;l'Arménie|Erevan|3;l'Azerbaïdjan|Bakou|3;le Liechtenstein|Vaduz|3
+A=la Chine|Pékin|1;le Japon|Tokyo|1;l'Inde|New Delhi|1;la Corée du Sud|Séoul|2;la Corée du Nord|Pyongyang|2;la Thaïlande|Bangkok|2;le Vietnam|Hanoï|2;les Philippines|Manille|2;la Malaisie|Kuala Lumpur|2;le Népal|Katmandou|2;le Pakistan|Islamabad|2;l'Afghanistan|Kaboul|2;l'Iran|Téhéran|2;l'Irak|Bagdad|2;l'Arabie saoudite|Riyad|2;le Liban|Beyrouth|2;la Syrie|Damas|2;le Qatar|Doha|2;les Émirats arabes unis|Abou Dabi|2;la Jordanie|Amman|3;Oman|Mascate|3;le Yémen|Sanaa|3;le Bangladesh|Dacca|3;le Cambodge|Phnom Penh|3;le Laos|Vientiane|3;la Birmanie|Naypyidaw|3;la Mongolie|Oulan-Bator|3;le Kazakhstan|Astana|3;l'Ouzbékistan|Tachkent|3;le Kirghizistan|Bichkek|3;le Tadjikistan|Douchanbé|3;le Turkménistan|Achgabat|3;le Bhoutan|Thimphou|3;Bahreïn|Manama|3;les Maldives|Malé|3
+F=l'Égypte|Le Caire|1;l'Algérie|Alger|1;la Tunisie|Tunis|1;le Maroc|Rabat|2;le Sénégal|Dakar|2;le Mali|Bamako|2;le Kenya|Nairobi|2;l'Éthiopie|Addis-Abeba|2;Madagascar|Antananarivo|2;le Cameroun|Yaoundé|2;la Libye|Tripoli|2;la République démocratique du Congo|Kinshasa|2;le Burkina Faso|Ouagadougou|2;la Côte d'Ivoire|Yamoussoukro|3;le Nigeria|Abuja|3;le Ghana|Accra|3;le Soudan|Khartoum|3;la Tanzanie|Dodoma|3;l'Ouganda|Kampala|3;le Rwanda|Kigali|3;la République du Congo|Brazzaville|3;le Gabon|Libreville|3;le Tchad|N'Djamena|3;le Niger|Niamey|3;le Bénin|Porto-Novo|3;le Togo|Lomé|3;la Guinée|Conakry|3;la Mauritanie|Nouakchott|3;l'Angola|Luanda|3;le Mozambique|Maputo|3;la Zambie|Lusaka|3;le Zimbabwe|Harare|3;la Namibie|Windhoek|3;le Botswana|Gaborone|3;la Somalie|Mogadiscio|3;la Sierra Leone|Freetown|3;le Liberia|Monrovia|3;la Centrafrique|Bangui|3;le Cap-Vert|Praia|3;l'Érythrée|Asmara|3;le Malawi|Lilongwe|3
+M=les États-Unis|Washington|1;le Mexique|Mexico|1;l'Argentine|Buenos Aires|1;le Canada|Ottawa|2;le Brésil|Brasilia|2;le Chili|Santiago|2;le Pérou|Lima|2;la Colombie|Bogota|2;le Venezuela|Caracas|2;Cuba|La Havane|2;Haïti|Port-au-Prince|2;l'Uruguay|Montevideo|3;le Paraguay|Asuncion|3;l'Équateur|Quito|3;le Costa Rica|San José|3;le Nicaragua|Managua|3;le Honduras|Tegucigalpa|3;la République dominicaine|Saint-Domingue|3;la Jamaïque|Kingston|3;les Bahamas|Nassau|3;le Suriname|Paramaribo|3;le Guyana|Georgetown|3;Trinité-et-Tobago|Port-d'Espagne|3
+O=l'Australie|Canberra|2;la Nouvelle-Zélande|Wellington|2;les Fidji|Suva|3;la Papouasie-Nouvelle-Guinée|Port Moresby|3;les Samoa|Apia|3;les Tonga|Nuku'alofa|3;le Vanuatu|Port-Vila|3`;
+const CONT={E:"Europe",A:"Asie",F:"Afrique",M:"Amérique",O:"Océanie"};
+const SANS_CONT=["la Turquie","Chypre","la Géorgie","l'Arménie","l'Azerbaïdjan","le Kazakhstan"];
+
+const DEPS=`01|Ain|Bourg-en-Bresse|A;02|Aisne|Laon|H;03|Allier|Moulins|A;04|Alpes-de-Haute-Provence|Digne-les-Bains|P;05|Hautes-Alpes|Gap|P;06|Alpes-Maritimes|Nice|P;07|Ardèche|Privas|A;08|Ardennes|Charleville-Mézières|G;09|Ariège|Foix|O;10|Aube|Troyes|G;11|Aude|Carcassonne|O;12|Aveyron|Rodez|O;13|Bouches-du-Rhône|Marseille|P;14|Calvados|Caen|N;15|Cantal|Aurillac|A;16|Charente|Angoulême|Q;17|Charente-Maritime|La Rochelle|Q;18|Cher|Bourges|C;19|Corrèze|Tulle|Q;2A|Corse-du-Sud|Ajaccio|K;2B|Haute-Corse|Bastia|K;21|Côte-d'Or|Dijon|B;22|Côtes-d'Armor|Saint-Brieuc|R;23|Creuse|Guéret|Q;24|Dordogne|Périgueux|Q;25|Doubs|Besançon|B;26|Drôme|Valence|A;27|Eure|Évreux|N;28|Eure-et-Loir|Chartres|C;29|Finistère|Quimper|R;30|Gard|Nîmes|O;31|Haute-Garonne|Toulouse|O;32|Gers|Auch|O;33|Gironde|Bordeaux|Q;34|Hérault|Montpellier|O;35|Ille-et-Vilaine|Rennes|R;36|Indre|Châteauroux|C;37|Indre-et-Loire|Tours|C;38|Isère|Grenoble|A;39|Jura|Lons-le-Saunier|B;40|Landes|Mont-de-Marsan|Q;41|Loir-et-Cher|Blois|C;42|Loire|Saint-Étienne|A;43|Haute-Loire|Le Puy-en-Velay|A;44|Loire-Atlantique|Nantes|L;45|Loiret|Orléans|C;46|Lot|Cahors|O;47|Lot-et-Garonne|Agen|Q;48|Lozère|Mende|O;49|Maine-et-Loire|Angers|L;50|Manche|Saint-Lô|N;51|Marne|Châlons-en-Champagne|G;52|Haute-Marne|Chaumont|G;53|Mayenne|Laval|L;54|Meurthe-et-Moselle|Nancy|G;55|Meuse|Bar-le-Duc|G;56|Morbihan|Vannes|R;57|Moselle|Metz|G;58|Nièvre|Nevers|B;59|Nord|Lille|H;60|Oise|Beauvais|H;61|Orne|Alençon|N;62|Pas-de-Calais|Arras|H;63|Puy-de-Dôme|Clermont-Ferrand|A;64|Pyrénées-Atlantiques|Pau|Q;65|Hautes-Pyrénées|Tarbes|O;66|Pyrénées-Orientales|Perpignan|O;67|Bas-Rhin|Strasbourg|G;68|Haut-Rhin|Colmar|G;69|Rhône|Lyon|A;70|Haute-Saône|Vesoul|B;71|Saône-et-Loire|Mâcon|B;72|Sarthe|Le Mans|L;73|Savoie|Chambéry|A;74|Haute-Savoie|Annecy|A;75|Paris|Paris|I;76|Seine-Maritime|Rouen|N;77|Seine-et-Marne|Melun|I;78|Yvelines|Versailles|I;79|Deux-Sèvres|Niort|Q;80|Somme|Amiens|H;81|Tarn|Albi|O;82|Tarn-et-Garonne|Montauban|O;83|Var|Toulon|P;84|Vaucluse|Avignon|P;85|Vendée|La Roche-sur-Yon|L;86|Vienne|Poitiers|Q;87|Haute-Vienne|Limoges|Q;88|Vosges|Épinal|G;89|Yonne|Auxerre|B;90|Territoire de Belfort|Belfort|B;91|Essonne|Évry-Courcouronnes|I;92|Hauts-de-Seine|Nanterre|I;93|Seine-Saint-Denis|Bobigny|I;94|Val-de-Marne|Créteil|I;95|Val-d'Oise|Pontoise|I;971|Guadeloupe|Basse-Terre|D;972|Martinique|Fort-de-France|D;973|Guyane|Cayenne|D;974|La Réunion|Saint-Denis|D;976|Mayotte|Mamoudzou|D`;
+const REG={A:"Auvergne-Rhône-Alpes",B:"Bourgogne-Franche-Comté",R:"Bretagne",C:"Centre-Val de Loire",G:"Grand Est",H:"Hauts-de-France",I:"Île-de-France",N:"Normandie",Q:"Nouvelle-Aquitaine",O:"Occitanie",L:"Pays de la Loire",P:"Provence-Alpes-Côte d'Azur"};
+
+const ELEMS="H Hydrogène,He Hélium,Li Lithium,Be Béryllium,B Bore,C Carbone,N Azote,O Oxygène,F Fluor,Ne Néon,Na Sodium,Mg Magnésium,Al Aluminium,Si Silicium,P Phosphore,S Soufre,Cl Chlore,Ar Argon,K Potassium,Ca Calcium,Sc Scandium,Ti Titane,V Vanadium,Cr Chrome,Mn Manganèse,Fe Fer,Co Cobalt,Ni Nickel,Cu Cuivre,Zn Zinc,Ga Gallium,Ge Germanium,As Arsenic,Se Sélénium,Br Brome,Kr Krypton,Rb Rubidium,Sr Strontium,Y Yttrium,Zr Zirconium,Nb Niobium,Mo Molybdène,Tc Technétium,Ru Ruthénium,Rh Rhodium,Pd Palladium,Ag Argent,Cd Cadmium,In Indium,Sn Étain,Sb Antimoine,Te Tellure,I Iode,Xe Xénon,Cs Césium,Ba Baryum,La Lanthane,Ce Cérium,Pr Praséodyme,Nd Néodyme,Pm Prométhium,Sm Samarium,Eu Europium,Gd Gadolinium,Tb Terbium,Dy Dysprosium,Ho Holmium,Er Erbium,Tm Thulium,Yb Ytterbium,Lu Lutécium,Hf Hafnium,Ta Tantale,W Tungstène,Re Rhénium,Os Osmium,Ir Iridium,Pt Platine,Au Or,Hg Mercure,Tl Thallium,Pb Plomb,Bi Bismuth,Po Polonium,At Astate,Rn Radon,Fr Francium,Ra Radium,Ac Actinium,Th Thorium,Pa Protactinium,U Uranium,Np Neptunium,Pu Plutonium,Am Américium,Cm Curium,Bk Berkélium,Cf Californium,Es Einsteinium,Fm Fermium,Md Mendélévium,No Nobélium,Lr Lawrencium,Rf Rutherfordium,Db Dubnium,Sg Seaborgium,Bh Bohrium,Hs Hassium,Mt Meitnérium,Ds Darmstadtium,Rg Roentgenium,Cn Copernicium,Nh Nihonium,Fl Flérovium,Mc Moscovium,Lv Livermorium,Ts Tennesse,Og Oganesson";
+
+const DATES=`
+En quelle année a eu lieu la prise de la Bastille ?|1789|1
+En quelle année Christophe Colomb a-t-il atteint l'Amérique ?|1492|1
+En quelle année la Première Guerre mondiale a-t-elle commencé ?|1914|1
+En quelle année la Seconde Guerre mondiale s'est-elle terminée ?|1945|1
+En quelle année le mur de Berlin est-il tombé ?|1989|1
+En quelle année l'homme a-t-il marché sur la Lune pour la première fois ?|1969|1
+En quelle année a eu lieu le débarquement de Normandie ?|1944|1
+En quelle année les pièces et billets en euros sont-ils entrés en circulation ?|2002|1
+En quelle année la France a-t-elle remporté sa première Coupe du monde de football ?|1998|1
+En quelle année l'armistice de la Première Guerre mondiale a-t-il été signé ?|1918|1
+En quelle année la Seconde Guerre mondiale a-t-elle commencé ?|1939|1
+En quelle année ont eu lieu les attentats du World Trade Center ?|2001|1
+En quelle année Notre-Dame de Paris a-t-elle été ravagée par un incendie ?|2019|1
+En quelle année Charlemagne a-t-il été couronné empereur ?|800|2
+En quelle année a eu lieu la bataille de Marignan ?|1515|2
+En quelle année a eu lieu la bataille de Waterloo ?|1815|2
+En quelle année Napoléon Bonaparte a-t-il été sacré empereur ?|1804|2
+En quelle année le Titanic a-t-il fait naufrage ?|1912|2
+En quelle année la tour Eiffel a-t-elle été inaugurée ?|1889|2
+En quelle année la révolution d'Octobre a-t-elle eu lieu en Russie ?|1917|2
+En quelle année les États-Unis ont-ils déclaré leur indépendance ?|1776|2
+En quelle année la Ve République française a-t-elle été instaurée ?|1958|2
+En quelle année la peine de mort a-t-elle été abolie en France ?|1981|2
+En quelle année les Françaises ont-elles obtenu le droit de vote ?|1944|2
+En quelle année Louis XVI a-t-il été guillotiné ?|1793|2
+En quelle année le traité de Versailles a-t-il été signé ?|1919|2
+En quelle année l'URSS a-t-elle été dissoute ?|1991|2
+En quelle année John F. Kennedy a-t-il été assassiné ?|1963|2
+En quelle année a eu lieu la catastrophe nucléaire de Tchernobyl ?|1986|2
+En quelle année a eu lieu le krach boursier de Wall Street ?|1929|2
+En quelle année Youri Gagarine a-t-il effectué le premier vol habité dans l'espace ?|1961|2
+En quelle année a eu lieu la bataille de Verdun ?|1916|2
+En quelle année la guerre d'Algérie a-t-elle pris fin ?|1962|2
+En quelle année Paris a-t-elle été libérée de l'occupation allemande ?|1944|2
+En quelle année le premier iPhone a-t-il été commercialisé ?|2007|2
+En quelle année Charles de Gaulle a-t-il lancé son appel du 18 Juin ?|1940|2
+En quelle année l'Allemagne a-t-elle été réunifiée ?|1990|2
+En quelle année le Royaume-Uni a-t-il officiellement quitté l'Union européenne ?|2020|2
+En quelle année la loi Veil a-t-elle légalisé l'IVG en France ?|1975|2
+En quelle année l'édit de Nantes a-t-il été signé ?|1598|3
+En quelle année l'édit de Nantes a-t-il été révoqué ?|1685|3
+En quelle année Guillaume le Conquérant a-t-il remporté la bataille d'Hastings ?|1066|3
+En quelle année Jeanne d'Arc est-elle morte sur le bûcher ?|1431|3
+En quelle année Constantinople est-elle tombée aux mains des Ottomans ?|1453|3
+En quelle année Louis XIV est-il mort ?|1715|3
+En quelle année Henri IV a-t-il été assassiné ?|1610|3
+En quelle année le traité de Rome, fondateur de la CEE, a-t-il été signé ?|1957|3
+En quelle année le traité de Maastricht a-t-il été signé ?|1992|3
+En quelle année l'esclavage a-t-il été définitivement aboli en France ?|1848|3
+En quelle année la loi de séparation des Églises et de l'État a-t-elle été votée en France ?|1905|3
+En quelle année Nelson Mandela a-t-il été élu président de l'Afrique du Sud ?|1994|3
+En quelle année le tunnel sous la Manche a-t-il été inauguré ?|1994|3
+En quelle année les frères Lumière ont-ils présenté le cinématographe ?|1895|3
+En quelle année a eu lieu la bataille d'Austerlitz ?|1805|3
+En quelle année la Magna Carta a-t-elle été signée ?|1215|3
+En quelle année Martin Luther a-t-il publié ses 95 thèses ?|1517|3
+En quelle année les congés payés ont-ils été instaurés en France ?|1936|3
+En quelle année l'ONU a-t-elle adopté la Déclaration universelle des droits de l'homme ?|1948|3
+En quelle année le canal de Suez a-t-il été inauguré ?|1869|3
+En quelle année la guerre de Sécession a-t-elle éclaté aux États-Unis ?|1861|3
+En quelle année la Commune de Paris a-t-elle eu lieu ?|1871|3
+En quelle année Louis Blériot a-t-il traversé la Manche en avion ?|1909|3
+En quelle année Charles Lindbergh a-t-il traversé l'Atlantique en solitaire et sans escale ?|1927|3
+En quelle année le Concorde a-t-il effectué son dernier vol commercial ?|2003|3
+En quelle année François Ier a-t-il signé l'ordonnance de Villers-Cotterêts ?|1539|3
+En quelle année la Joconde a-t-elle été volée au Louvre ?|1911|3
+En quelle année le premier TGV commercial a-t-il été mis en service en France ?|1981|3
+En quelle année le mur de Berlin a-t-il été construit ?|1961|3
+En quelle année la pyramide du Louvre a-t-elle été inaugurée ?|1989|3
+En quelle année a eu lieu le massacre de la Saint-Barthélemy ?|1572|3
+En quelle année l'Académie française a-t-elle été fondée ?|1635|3
+En quelle année la Sécurité sociale a-t-elle été créée en France ?|1945|3`;
+
+const PRES=[[1960,1969,"Charles de Gaulle"],[1970,1974,"Georges Pompidou"],[1975,1981,"Valéry Giscard d'Estaing"],[1982,1995,"François Mitterrand"],[1996,2007,"Jacques Chirac"],[2008,2012,"Nicolas Sarkozy"],[2013,2017,"François Hollande"],[2018,2026,"Emmanuel Macron"]];
+
+const OEUVRES=`
+L|Les Misérables|Victor Hugo|1
+L|Notre-Dame de Paris|Victor Hugo|1
+L|Les Contemplations|Victor Hugo|3
+L|Le Petit Prince|Antoine de Saint-Exupéry|1
+L|Les Trois Mousquetaires|Alexandre Dumas|1
+L|Le Comte de Monte-Cristo|Alexandre Dumas|2
+L|Germinal|Émile Zola|1
+L|L'Assommoir|Émile Zola|2
+L|Madame Bovary|Gustave Flaubert|2
+L|L'Éducation sentimentale|Gustave Flaubert|3
+L|Le Rouge et le Noir|Stendhal|2
+L|La Chartreuse de Parme|Stendhal|3
+L|Le Père Goriot|Honoré de Balzac|2
+L|Eugénie Grandet|Honoré de Balzac|3
+L|L'Étranger|Albert Camus|2
+L|La Peste|Albert Camus|2
+L|Candide|Voltaire|2
+L|Les Fleurs du mal|Charles Baudelaire|2
+L|Le Cid|Pierre Corneille|2
+L|Phèdre|Jean Racine|2
+L|Le Malade imaginaire|Molière|1
+L|L'Avare|Molière|1
+L|Le Corbeau et le Renard|Jean de La Fontaine|1
+L|Vingt Mille Lieues sous les mers|Jules Verne|1
+L|Le Tour du monde en quatre-vingts jours|Jules Verne|1
+L|Bel-Ami|Guy de Maupassant|2
+L|Le Horla|Guy de Maupassant|3
+L|À la recherche du temps perdu|Marcel Proust|2
+L|Voyage au bout de la nuit|Louis-Ferdinand Céline|3
+L|Les Liaisons dangereuses|Pierre Choderlos de Laclos|3
+L|Cyrano de Bergerac|Edmond Rostand|2
+L|Roméo et Juliette|William Shakespeare|1
+L|Hamlet|William Shakespeare|1
+L|Don Quichotte|Miguel de Cervantès|2
+L|La Divine Comédie|Dante Alighieri|2
+L|Guerre et Paix|Léon Tolstoï|2
+L|Anna Karénine|Léon Tolstoï|3
+L|Crime et Châtiment|Fiodor Dostoïevski|2
+L|1984|George Orwell|2
+L|La Ferme des animaux|George Orwell|2
+L|Le Vieil Homme et la Mer|Ernest Hemingway|2
+L|Orgueil et Préjugés|Jane Austen|2
+L|Oliver Twist|Charles Dickens|2
+L|Le Seigneur des anneaux|J. R. R. Tolkien|1
+L|Harry Potter à l'école des sorciers|J. K. Rowling|1
+L|Le Nom de la rose|Umberto Eco|3
+L|Cent Ans de solitude|Gabriel García Márquez|3
+L|La Métamorphose|Franz Kafka|3
+L|Les Raisins de la colère|John Steinbeck|3
+L|Moby Dick|Herman Melville|3
+L|Frankenstein|Mary Shelley|2
+L|Dracula|Bram Stoker|2
+L|Les Aventures de Tom Sawyer|Mark Twain|2
+L|L'Odyssée|Homère|1
+L|Le Deuxième Sexe|Simone de Beauvoir|3
+L|Bonjour tristesse|Françoise Sagan|3
+L|La Gloire de mon père|Marcel Pagnol|2
+L|Le Grand Meaulnes|Alain-Fournier|3
+L|Gargantua|François Rabelais|3
+L|Les Essais|Michel de Montaigne|3
+L|L'Écume des jours|Boris Vian|3
+L|Vipère au poing|Hervé Bazin|3
+L|Les Hauts de Hurlevent|Emily Brontë|3
+L|Le Portrait de Dorian Gray|Oscar Wilde|3
+T|La Joconde|Léonard de Vinci|1
+T|La Cène|Léonard de Vinci|2
+T|Guernica|Pablo Picasso|1
+T|Les Demoiselles d'Avignon|Pablo Picasso|2
+T|La Nuit étoilée|Vincent van Gogh|1
+T|Les Tournesols|Vincent van Gogh|1
+T|Impression, soleil levant|Claude Monet|2
+T|Les Nymphéas|Claude Monet|2
+T|La Liberté guidant le peuple|Eugène Delacroix|2
+T|Le Radeau de la Méduse|Théodore Géricault|3
+T|La Naissance de Vénus|Sandro Botticelli|2
+T|La Jeune Fille à la perle|Johannes Vermeer|2
+T|La Ronde de nuit|Rembrandt|3
+T|Le Cri|Edvard Munch|2
+T|La Persistance de la mémoire|Salvador Dalí|2
+T|Le Déjeuner sur l'herbe|Édouard Manet|3
+T|Olympia|Édouard Manet|3
+T|Le Baiser (1908)|Gustav Klimt|3
+T|Les Ménines|Diego Vélasquez|3
+T|Le Jardin des délices|Jérôme Bosch|3
+T|Bal du moulin de la Galette|Auguste Renoir|3
+T|Un dimanche après-midi à l'Île de la Grande Jatte|Georges Seurat|3
+T|L'Origine du monde|Gustave Courbet|3
+T|Les Joueurs de cartes|Paul Cézanne|3
+T|Le Sacre de Napoléon|Jacques-Louis David|3
+T|La Grande Vague de Kanagawa|Hokusai|3
+T|La Création d'Adam|Michel-Ange|2
+T|Le Fils de l'homme|René Magritte|3
+M|Les Quatre Saisons|Antonio Vivaldi|1
+M|La Flûte enchantée|Wolfgang Amadeus Mozart|1
+M|Les Noces de Figaro|Wolfgang Amadeus Mozart|2
+M|La Marche turque|Wolfgang Amadeus Mozart|2
+M|L'Hymne à la joie|Ludwig van Beethoven|1
+M|La Lettre à Élise|Ludwig van Beethoven|2
+M|Le Boléro|Maurice Ravel|2
+M|Carmen|Georges Bizet|2
+M|Le Lac des cygnes|Piotr Ilitch Tchaïkovski|2
+M|Casse-Noisette|Piotr Ilitch Tchaïkovski|2
+M|La Traviata|Giuseppe Verdi|2
+M|Aïda|Giuseppe Verdi|3
+M|Le Barbier de Séville|Gioachino Rossini|3
+M|Clair de lune|Claude Debussy|2
+M|La Chevauchée des Walkyries|Richard Wagner|2
+M|Les Variations Goldberg|Jean-Sébastien Bach|3
+M|La Toccata et fugue en ré mineur|Jean-Sébastien Bach|2
+M|Le Messie|Georg Friedrich Haendel|3
+M|La Symphonie fantastique|Hector Berlioz|3
+M|Le Carnaval des animaux|Camille Saint-Saëns|3
+M|Les Gymnopédies|Erik Satie|3
+M|Le Beau Danube bleu|Johann Strauss fils|3
+M|Madame Butterfly|Giacomo Puccini|3
+M|Le Sacre du printemps|Igor Stravinsky|3
+M|Pierre et le Loup|Sergueï Prokofiev|3
+M|Peer Gynt|Edvard Grieg|3
+F|Titanic|James Cameron|1
+F|Avatar|James Cameron|1
+F|Les Dents de la mer|Steven Spielberg|1
+F|E.T. l'extra-terrestre|Steven Spielberg|1
+F|Jurassic Park|Steven Spielberg|1
+F|La Liste de Schindler|Steven Spielberg|2
+F|La Guerre des étoiles (1977)|George Lucas|1
+F|Psychose|Alfred Hitchcock|2
+F|Les Oiseaux|Alfred Hitchcock|2
+F|Pulp Fiction|Quentin Tarantino|2
+F|Le Parrain|Francis Ford Coppola|2
+F|Apocalypse Now|Francis Ford Coppola|3
+F|2001, l'Odyssée de l'espace|Stanley Kubrick|2
+F|Shining|Stanley Kubrick|2
+F|Le Grand Bleu|Luc Besson|2
+F|Léon|Luc Besson|2
+F|Le Cinquième Élément|Luc Besson|2
+F|Le Fabuleux Destin d'Amélie Poulain|Jean-Pierre Jeunet|2
+F|Les Quatre Cents Coups|François Truffaut|3
+F|À bout de souffle|Jean-Luc Godard|3
+F|La Grande Vadrouille|Gérard Oury|2
+F|Bienvenue chez les Ch'tis|Dany Boon|1
+F|Les Visiteurs|Jean-Marie Poiré|2
+F|Le Dîner de cons|Francis Veber|2
+F|Les Temps modernes|Charlie Chaplin|2
+F|Citizen Kane|Orson Welles|3
+F|Taxi Driver|Martin Scorsese|3
+F|Inception|Christopher Nolan|2
+F|Gladiator|Ridley Scott|2
+F|Alien, le huitième passager|Ridley Scott|3
+F|Le Seigneur des anneaux (trilogie)|Peter Jackson|2
+F|Forrest Gump|Robert Zemeckis|2
+F|Retour vers le futur|Robert Zemeckis|2
+F|Le Voyage de Chihiro|Hayao Miyazaki|2
+F|La Dolce Vita|Federico Fellini|3
+F|Le Bon, la Brute et le Truand|Sergio Leone|2
+F|Les Enfants du paradis|Marcel Carné|3
+F|La Haine|Mathieu Kassovitz|2
+F|The Artist|Michel Hazanavicius|3
+F|Parasite|Bong Joon-ho|3
+F|Le Pianiste|Roman Polanski|3
+F|Edward aux mains d'argent|Tim Burton|2
+F|Fight Club|David Fincher|3
+F|Les Choristes|Christophe Barratier|3`;
+
+/* animal | petit | niveau | cri | niveau */
+const ANIMAUX=`le chat|chaton|1|miaule|1;le chien|chiot|1|aboie|1;la vache|veau|1|meugle|1;le cheval|poulain|1|hennit|1;le mouton|agneau|1|bêle|1;le cochon|porcelet|1||;le lapin|lapereau|2|clapit|3;le cerf|faon|2|brame|2;le sanglier|marcassin|2||;le lion|lionceau|1|rugit|1;l'ours|ourson|1||;le loup|louveteau|2|hurle|1;le renard|renardeau|2|glapit|3;le canard|caneton|1|cancane|2;l'oie|oison|3|cacarde|3;l'âne|ânon|2|brait|2;le lièvre|levraut|3|vagit|3;l'éléphant|éléphanteau|2|barrit|2;la baleine|baleineau|2||;l'aigle|aiglon|2|glatit|3;le pigeon|pigeonneau|2|roucoule|2;la grenouille|têtard|1|coasse|2;le corbeau|corbillat|3|croasse|2;la cigogne|cigogneau|3|craquette|3;le chameau|chamelon|3|blatère|3;le dindon|dindonneau|2|glougloute|3;la souris|souriceau|2|couine|2;le tigre|||feule|3;l'abeille|||bourdonne|1;la pie|||jacasse|3;le hibou|||hulule|2`;
+
+const CDM=[[1930,"Uruguay","Uruguay"],[1934,"Italie","Italie"],[1938,"Italie","France"],[1950,"Uruguay","Brésil"],[1954,"Allemagne","Suisse"],[1958,"Brésil","Suède"],[1962,"Brésil","Chili"],[1966,"Angleterre","Angleterre"],[1970,"Brésil","Mexique"],[1974,"Allemagne","Allemagne"],[1978,"Argentine","Argentine"],[1982,"Italie","Espagne"],[1986,"Argentine","Mexique"],[1990,"Allemagne","Italie"],[1994,"Brésil","États-Unis"],[1998,"France","France"],[2002,"Brésil","Corée du Sud et Japon"],[2006,"Italie","Allemagne"],[2010,"Espagne","Afrique du Sud"],[2014,"Allemagne","Brésil"],[2018,"France","Russie"],[2022,"Argentine","Qatar"]];
+const JO=[[1896,"Athènes"],[1900,"Paris"],[1904,"Saint-Louis"],[1908,"Londres"],[1912,"Stockholm"],[1920,"Anvers"],[1924,"Paris"],[1928,"Amsterdam"],[1932,"Los Angeles"],[1936,"Berlin"],[1948,"Londres"],[1952,"Helsinki"],[1956,"Melbourne"],[1960,"Rome"],[1964,"Tokyo"],[1968,"Mexico"],[1972,"Munich"],[1976,"Montréal"],[1980,"Moscou"],[1984,"Los Angeles"],[1988,"Séoul"],[1992,"Barcelone"],[1996,"Atlanta"],[2000,"Sydney"],[2004,"Athènes"],[2008,"Pékin"],[2012,"Londres"],[2016,"Rio de Janeiro"],[2020,"Tokyo"],[2024,"Paris"]];
+
+const ANGLAIS="dog|chien|1;cat|chat|1;house|maison|1;rain|pluie|1;snow|neige|1;bread|pain|1;cheese|fromage|1;chicken|poulet|1;key|clé|1;shoe|chaussure|1;butterfly|papillon|2;strawberry|fraise|2;spoon|cuillère|2;fork|fourchette|2;knife|couteau|2;bee|abeille|2;honey|miel|2;cloud|nuage|2;lawyer|avocat|2;nurse|infirmière|2;library|bibliothèque|2;mushroom|champignon|2;towel|serviette|2;blanket|couverture|2;roof|toit|2;stairs|escalier|2;bridge|pont|2;church|église|2;glove|gant|2;scarf|écharpe|2;umbrella|parapluie|2;turtle|tortue|2;shark|requin|2;whale|baleine|2;peach|pêche|2;pineapple|ananas|2;cucumber|concombre|3;pumpkin|citrouille|3;squirrel|écureuil|3;owl|hibou|3;hedgehog|hérisson|3;ladybug|coccinelle|3;dragonfly|libellule|3;wheelbarrow|brouette|3;thunderstorm|orage|3;bookshop|librairie|3;pillow|oreiller|3;ceiling|plafond|3;wallet|portefeuille|3;mayor|maire|3;seagull|mouette|3;lighthouse|phare|3;crow|corbeau|3;wasp|guêpe|3;hive|ruche|3;sunflower|tournesol|3;garlic|ail|3;plum|prune|3";
+
+const MONNAIES="le Japon|Le yen|1;les États-Unis|Le dollar|1;le Royaume-Uni|La livre sterling|1;la Chine|Le yuan|2;l'Inde|La roupie|2;la Russie|Le rouble|2;le Brésil|Le réal|2;le Mexique|Le peso|2;le Maroc|Le dirham|2;la Tunisie|Le dinar|2;le Sénégal|Le franc CFA|2;la Corée du Sud|Le won|3;la Pologne|Le zloty|3;la Hongrie|Le forint|3;l'Afrique du Sud|Le rand|3;Israël|Le shekel|3;la Thaïlande|Le baht|3;le Vietnam|Le dong|3;l'Arabie saoudite|Le riyal|3;la Roumanie|Le leu|3;l'Ukraine|La hryvnia|3;le Pérou|Le sol|3;le Bangladesh|Le taka|3;l'Éthiopie|Le birr|3;le Nigeria|Le naira|3;le Ghana|Le cedi|3;la Malaisie|Le ringgit|3;le Kenya|Le shilling|3;la Géorgie|Le lari|3;l'Arménie|Le dram|3";
+
+/* catégorie | niveau | question | bonne réponse | 3 mauvaises */
+const DIVERS=`
+geo|1|Quel est le plus grand océan du monde ?|L'océan Pacifique|L'océan Atlantique|L'océan Indien|L'océan Arctique
+geo|1|Quel fleuve traverse Paris ?|La Seine|La Loire|Le Rhône|La Garonne
+geo|1|Quelle est la plus haute montagne du monde ?|L'Everest|Le K2|Le mont Blanc|Le Kilimandjaro
+geo|1|Dans quel pays se trouve la ville de Venise ?|L'Italie|L'Espagne|La Grèce|La Croatie
+geo|1|Quel est le plus grand pays du monde par sa superficie ?|La Russie|Le Canada|La Chine|Les États-Unis
+geo|1|Quelle chaîne de montagnes sépare la France de l'Espagne ?|Les Pyrénées|Les Alpes|Le Jura|Les Vosges
+geo|2|Quel est le plus long fleuve de France ?|La Loire|La Seine|Le Rhône|La Garonne
+geo|2|Quel est le point culminant de la France ?|Le mont Blanc|Le pic du Midi|La barre des Écrins|Le puy de Sancy
+geo|2|Quel est le plus grand désert chaud du monde ?|Le Sahara|Le désert de Gobi|Le Kalahari|Le désert d'Atacama
+geo|2|Quel détroit sépare l'Europe de l'Afrique ?|Le détroit de Gibraltar|Le détroit du Bosphore|Le détroit de Messine|Le détroit d'Ormuz
+geo|2|Dans quelle ville se trouve la Sagrada Família ?|Barcelone|Madrid|Séville|Valence
+geo|2|Quel est le pays le plus peuplé d'Afrique ?|Le Nigeria|L'Égypte|L'Éthiopie|L'Afrique du Sud
+geo|2|Quel est le plus petit État du monde ?|Le Vatican|Monaco|Saint-Marin|Le Liechtenstein
+geo|2|Dans quel pays se trouve le site de Machu Picchu ?|Le Pérou|La Bolivie|Le Chili|L'Équateur
+geo|2|Quel est le plus haut sommet d'Afrique ?|Le Kilimandjaro|Le mont Kenya|Le Toubkal|Le Ruwenzori
+geo|2|Quel volcan a enseveli Pompéi en l'an 79 ?|Le Vésuve|L'Etna|Le Stromboli|Le Santorin
+geo|3|Quel est le lac le plus profond du monde ?|Le lac Baïkal|Le lac Tanganyika|Le lac Supérieur|Le lac Titicaca
+geo|3|Quel fleuve traverse la ville de Budapest ?|Le Danube|Le Rhin|L'Elbe|La Vistule
+geo|3|Quelle est la plus grande île du monde ?|Le Groenland|Madagascar|Bornéo|La Nouvelle-Guinée
+geo|3|Quel pays compte le plus de fuseaux horaires, territoires d'outre-mer compris ?|La France|La Russie|Les États-Unis|Le Royaume-Uni
+geo|3|Quelle est la capitale de l'État de Californie ?|Sacramento|Los Angeles|San Francisco|San Diego
+geo|3|Quel cap marque l'extrémité sud de l'Amérique du Sud ?|Le cap Horn|Le cap de Bonne-Espérance|Le cap Nord|Le cap Finisterre
+hist|1|Quel roi de France était surnommé le Roi-Soleil ?|Louis XIV|Louis XVI|François Ier|Henri IV
+hist|1|Qui a été le premier président de la Ve République ?|Charles de Gaulle|Georges Pompidou|René Coty|François Mitterrand
+hist|1|Quel empereur français a été exilé à Sainte-Hélène ?|Napoléon Ier|Napoléon III|Charlemagne|Louis-Philippe
+hist|2|Quel roi de France a fait construire le château de Chambord ?|François Ier|Louis XIV|Henri II|Charles VIII
+hist|2|Quel homme politique français était surnommé « le Tigre » ?|Georges Clemenceau|Philippe Pétain|Ferdinand Foch|Raymond Poincaré
+hist|2|Quelle civilisation a bâti le Machu Picchu ?|Les Incas|Les Mayas|Les Aztèques|Les Olmèques
+hist|2|Quel pharaon est célèbre pour son tombeau découvert presque intact en 1922 ?|Toutânkhamon|Ramsès II|Khéops|Akhenaton
+hist|2|Qui a été la première femme Premier ministre en France ?|Édith Cresson|Simone Veil|Élisabeth Borne|Ségolène Royal
+hist|2|Dans quelle ville Jeanne d'Arc a-t-elle été brûlée ?|Rouen|Orléans|Reims|Paris
+hist|2|Dans quelle ville les rois de France étaient-ils traditionnellement sacrés ?|Reims|Saint-Denis|Paris|Chartres
+hist|2|Quel président américain a aboli l'esclavage ?|Abraham Lincoln|George Washington|Thomas Jefferson|Ulysses Grant
+hist|2|Quel navigateur a lancé la première expédition à faire le tour du monde ?|Fernand de Magellan|Vasco de Gama|Christophe Colomb|Jacques Cartier
+hist|3|Quel roi de France est mort des suites d'un tournoi en 1559 ?|Henri II|Henri III|François II|Charles IX
+hist|3|Quel traité a partagé l'empire de Charlemagne en 843 ?|Le traité de Verdun|Le traité de Troyes|Le traité de Meaux|Le traité d'Aix-la-Chapelle
+hist|3|Qui était le dernier roi des Français, renversé en 1848 ?|Louis-Philippe|Charles X|Louis XVIII|Louis XVI
+hist|3|Quelle dynastie a succédé aux Mérovingiens ?|Les Carolingiens|Les Capétiens|Les Valois|Les Bourbons
+hist|3|Qui a été le premier empereur romain ?|Auguste|Jules César|Néron|Tibère
+hist|3|Quelle bataille de 1415 a vu la chevalerie française défaite par les archers anglais ?|Azincourt|Crécy|Poitiers|Bouvines
+sci|1|Quelle planète est surnommée la planète rouge ?|Mars|Vénus|Jupiter|Mercure
+sci|1|Combien de pattes possède une araignée ?|8|6|10|12
+sci|1|Quel organe pompe le sang dans le corps humain ?|Le cœur|Le foie|Les poumons|Les reins
+sci|1|Quelle est la formule chimique de l'eau ?|H2O|CO2|O2|NaCl
+sci|1|À quelle température l'eau bout-elle au niveau de la mer ?|100 °C|90 °C|110 °C|120 °C
+sci|2|Quelle est la plus grande planète du système solaire ?|Jupiter|Saturne|Neptune|Uranus
+sci|2|Quel gaz est le plus abondant dans l'air ?|L'azote|L'oxygène|Le dioxyde de carbone|L'argon
+sci|2|Combien d'os compte le squelette d'un adulte ?|206|186|226|256
+sci|2|Quelle est la vitesse approximative de la lumière dans le vide ?|300 000 km/s|150 000 km/s|30 000 km/s|3 000 000 km/s
+sci|2|Quel savant a formulé la loi de la gravitation universelle ?|Isaac Newton|Galilée|Albert Einstein|Johannes Kepler
+sci|2|Quelle planète est la plus proche du Soleil ?|Mercure|Vénus|Mars|La Terre
+sci|2|Combien de planètes compte le système solaire ?|8|7|9|10
+sci|2|Quelle particule porte une charge électrique négative ?|L'électron|Le proton|Le neutron|Le photon
+sci|2|Quel scientifique a mis au point le vaccin contre la rage ?|Louis Pasteur|Edward Jenner|Alexandre Yersin|Claude Bernard
+sci|2|Quel instrument mesure la pression atmosphérique ?|Le baromètre|Le thermomètre|L'anémomètre|L'hygromètre
+sci|3|Quel est l'organe le plus lourd du corps humain ?|La peau|Le foie|Le cerveau|Les poumons
+sci|3|Quel est le plus petit os du corps humain ?|L'étrier|L'enclume|Le marteau|Le pisiforme
+sci|3|Qui a découvert la pénicilline ?|Alexander Fleming|Louis Pasteur|Robert Koch|Marie Curie
+sci|3|Quelle unité mesure la résistance électrique ?|L'ohm|Le volt|L'ampère|Le watt
+sci|3|Combien de chromosomes possède une cellule humaine normale ?|46|23|44|48
+sci|3|Qui a reçu le premier prix Nobel de physique, en 1901 ?|Wilhelm Röntgen|Marie Curie|Albert Einstein|Max Planck
+sci|3|Quel instrument mesure la vitesse du vent ?|L'anémomètre|Le baromètre|L'hygromètre|Le pluviomètre
+sci|3|Quelle grande galaxie est la plus proche de la Voie lactée ?|Andromède|Le Triangle|Le Sombrero|Le Tourbillon
+sport|1|Combien de joueurs une équipe de football aligne-t-elle sur le terrain ?|11|9|10|12
+sport|1|Dans quel sport utilise-t-on une raquette et un volant ?|Le badminton|Le tennis|Le squash|Le tennis de table
+sport|1|De quelle couleur est le maillot du leader du Tour de France ?|Jaune|Vert|Blanc|Rouge
+sport|1|Combien d'anneaux figurent sur le drapeau olympique ?|5|4|6|7
+sport|1|Dans quel sport s'illustre le Français Teddy Riner ?|Le judo|La boxe|La lutte|Le karaté
+sport|2|Sur quelle surface se joue le tournoi de Roland-Garros ?|La terre battue|Le gazon|Le dur|La moquette
+sport|2|Combien de points vaut un essai au rugby à XV ?|5|3|4|7
+sport|2|Combien de joueurs une équipe de handball aligne-t-elle sur le terrain ?|7|6|5|8
+sport|2|Quelle est la distance officielle d'un marathon ?|42,195 km|40 km|41,5 km|45 km
+sport|2|Combien de trous compte un parcours de golf classique ?|18|9|12|21
+sport|2|Combien de temps dure un match de rugby à XV, hors arrêts de jeu ?|80 minutes|90 minutes|70 minutes|60 minutes
+sport|2|Quel boxeur était surnommé « The Greatest » ?|Mohamed Ali|Mike Tyson|Joe Frazier|George Foreman
+sport|2|Quel nageur a remporté huit médailles d'or aux Jeux de Pékin en 2008 ?|Michael Phelps|Mark Spitz|Ian Thorpe|Ryan Lochte
+sport|3|Quel cycliste a remporté le Tour de France cinq fois de suite, de 1991 à 1995 ?|Miguel Indurain|Bernard Hinault|Greg LeMond|Jan Ullrich
+sport|3|En quelle année ont eu lieu les premiers Jeux olympiques modernes ?|1896|1900|1888|1904
+sport|3|À quelle hauteur se trouve un panier de basket ?|3,05 m|2,90 m|3,20 m|3,50 m
+nat|1|Quel est le plus grand animal terrestre ?|L'éléphant d'Afrique|La girafe|Le rhinocéros|L'hippopotame
+nat|1|Quel insecte produit le miel ?|L'abeille|La guêpe|Le frelon|La fourmi
+nat|1|Quel est le plus grand animal du monde ?|La baleine bleue|Le cachalot|L'éléphant d'Afrique|Le requin-baleine
+nat|1|Comment appelle-t-on l'habitation des abeilles ?|La ruche|Le terrier|La fourmilière|La tanière
+nat|1|Quel mammifère est capable de voler ?|La chauve-souris|L'écureuil|Le pingouin|L'autruche
+nat|2|Quel est l'animal terrestre le plus rapide ?|Le guépard|Le lion|L'antilope|Le lévrier
+nat|2|Combien de pattes possède un insecte ?|6|4|8|10
+nat|2|Quel arbre produit des glands ?|Le chêne|Le hêtre|Le châtaignier|Le noyer
+nat|2|Quel oiseau pond le plus gros œuf ?|L'autruche|L'émeu|Le cygne|L'aigle royal
+nat|2|De quoi se nourrit principalement le panda géant ?|De bambou|D'eucalyptus|De fruits|De poisson
+nat|2|Quelle fleur est l'emblème de la royauté française ?|Le lys|La rose|La tulipe|L'iris
+nat|3|Comment appelle-t-on l'abeille mâle ?|Le faux bourdon|Le frelon|L'ouvrier|Le taon
+nat|3|Combien de cœurs possède une pieuvre ?|3|1|2|4
+nat|3|Quel mammifère pond des œufs ?|L'ornithorynque|Le tatou|Le pangolin|Le koala
+nat|3|Quel est le plus grand félin du monde ?|Le tigre|Le lion|Le jaguar|Le léopard
+nat|3|Quel arbre figure sur le drapeau du Liban ?|Le cèdre|L'olivier|Le palmier|Le cyprès
+nat|3|Combien d'yeux possède une abeille ?|5|2|4|8
+lang|1|Quel est le pluriel de « cheval » ?|Chevaux|Chevals|Chevaus|Chevales
+lang|1|Combien de lettres compte l'alphabet français ?|26|24|25|28
+lang|1|Quel est le féminin de « loup » ?|Louve|Loupe|Loute|Louvette
+lang|1|Quel est le contraire de « généreux » ?|Avare|Aimable|Prudent|Timide
+lang|2|Quel est le pluriel de « un bail » ?|Des baux|Des bails|Des bailles|Des beaux
+lang|2|Quel mot est un synonyme de « célèbre » ?|Illustre|Discret|Anonyme|Banal
+lang|2|Que signifie l'expression « poser un lapin » ?|Ne pas venir à un rendez-vous|Faire une blague|Offrir un cadeau|Perdre son temps
+lang|2|Comment appelle-t-on un mot qui se lit dans les deux sens, comme « radar » ?|Un palindrome|Une anagramme|Un homonyme|Un acronyme
+lang|2|Quel est le pluriel de « un festival » ?|Des festivals|Des festivaux|Des festivales|Des festivaus
+lang|2|Comment appelle-t-on la peur des araignées ?|L'arachnophobie|La claustrophobie|L'agoraphobie|L'acrophobie
+lang|2|Comment appelle-t-on un vers de douze syllabes ?|Un alexandrin|Un décasyllabe|Un octosyllabe|Un quatrain
+lang|2|Combien de voyelles compte l'alphabet français ?|6|5|7|4
+lang|3|Quelle figure de style atténue une idée, comme « il nous a quittés » ?|L'euphémisme|L'hyperbole|La métaphore|L'oxymore
+lang|3|Que signifie le mot « sibyllin » ?|Obscur, énigmatique|Sifflant|Élégant|Trompeur
+lang|3|Quel est le pluriel de « un œil-de-bœuf » ?|Des œils-de-bœuf|Des yeux-de-bœuf|Des œils-de-bœufs|Des yeux-de-bœufs
+lang|3|De quelle langue vient le mot « kiosque » ?|Du turc|De l'arabe|Du russe|Du grec
+div|1|Combien de jours compte une année bissextile ?|366|365|364|367
+div|1|Combien de couleurs compte traditionnellement l'arc-en-ciel ?|7|5|6|8
+div|1|De quel pays la pizza est-elle originaire ?|L'Italie|La Grèce|L'Espagne|Les États-Unis
+div|1|Combien de côtés possède un hexagone ?|6|5|7|8
+div|1|Dans la mythologie grecque, qui est le roi des dieux ?|Zeus|Poséidon|Hadès|Apollon
+div|1|Quelle ville est surnommée la « Ville lumière » ?|Paris|Lyon|Londres|Rome
+div|1|Quel pays a offert la statue de la Liberté aux États-Unis ?|La France|Le Royaume-Uni|L'Italie|L'Espagne
+div|1|Dans quel musée parisien la Joconde est-elle exposée ?|Le Louvre|Le musée d'Orsay|Le Centre Pompidou|Le musée Rodin
+div|1|Combien de zéros comporte un million ?|6|5|7|9
+div|1|Quelle couleur obtient-on en mélangeant du bleu et du jaune ?|Vert|Orange|Violet|Marron
+nat|1|Quel animal est surnommé le « roi de la jungle » ?|Le lion|Le tigre|L'éléphant|Le gorille
+div|2|Quel est l'ingrédient principal du guacamole ?|L'avocat|Le concombre|Le poivron|Le petit pois
+div|2|Quel fromage entre dans la recette traditionnelle de la tartiflette ?|Le reblochon|Le maroilles|Le comté|Le munster
+div|2|Combien de cases compte un échiquier ?|64|49|81|100
+div|2|Quel dieu romain est le dieu de la guerre ?|Mars|Jupiter|Neptune|Vulcain
+div|2|Quel est le signe astrologique d'une personne née le 1er janvier ?|Capricorne|Sagittaire|Verseau|Bélier
+div|2|Quelles noces fête-t-on après 50 ans de mariage ?|Les noces d'or|Les noces d'argent|Les noces de diamant|Les noces de platine
+div|2|Quel est le plus petit nombre premier ?|2|1|0|3
+div|2|Quel alcool est à la base du mojito ?|Le rhum|La vodka|Le gin|La tequila
+div|2|Quel groupe britannique a enregistré l'album « Abbey Road » ?|Les Beatles|Les Rolling Stones|Queen|Pink Floyd
+div|2|Quelle chanteuse a rendu célèbre « Non, je ne regrette rien » ?|Édith Piaf|Dalida|Barbara|Juliette Gréco
+div|2|Combien de zéros comporte un milliard ?|9|6|8|12
+div|3|Dans la mythologie grecque, qui a volé le feu aux dieux ?|Prométhée|Hermès|Héphaïstos|Icare
+div|3|Quel fromage est une spécialité de la Thiérache, dans le nord de la France ?|Le maroilles|Le munster|Le livarot|L'époisses
+div|3|Combien de touches compte un piano moderne ?|88|76|84|92
+div|3|Quel architecte a conçu la pyramide du Louvre ?|Ieoh Ming Pei|Jean Nouvel|Renzo Piano|Norman Foster`;
+
+function buildBank(){
+  /* Pays */
+  const pays=[];
+  lines(PAYS).forEach(l=>{const[k,rest]=l.split("=");rest.split(";").forEach(x=>{const[n,c,d]=x.split("|");pays.push({n,c,k,d:+d})})});
+  pays.forEach(p=>{
+    const same=pays.filter(x=>x.k===p.k);
+    add("geo","cap",3,p.d,`Quelle est la capitale ${de(p.n)} ?`,p.c,others(same.map(x=>x.c),p.c));
+    add("geo","pays",2,p.d,`${p.c} est la capitale de quel pays ?`,maj(nu(p.n)),others(same.map(x=>maj(nu(x.n))),maj(nu(p.n))));
+    if(p.d>=2&&!SANS_CONT.includes(p.n))add("geo","cont",1,p.d-1,`Sur quel continent ${p.n.startsWith("les ")?"se trouvent":"se trouve"} ${p.n} ?`,CONT[p.k],others(Object.values(CONT),CONT[p.k]));
+  });
+  /* Départements */
+  const deps=DEPS.split(";").map(x=>{const[n,nom,pref,r]=x.split("|");return{n,nom,pref,r}});
+  deps.forEach(d=>{
+    add("geo","dep",3,2,`Quel numéro porte le département « ${d.nom} » ?`,d.n,others(deps.map(x=>x.n),d.n));
+    add("geo","dep",3,2,`Quel département porte le numéro ${d.n} ?`,d.nom,others(deps.map(x=>x.nom),d.nom));
+    if(!["75","90","95","976"].includes(d.n)){
+      add("geo","dep",3,3,`Quelle est la préfecture du département « ${d.nom} » ?`,d.pref,others(deps.map(x=>x.pref),d.pref));
+      if(d.n!=="974")add("geo","dep",3,2,`De quel département ${d.pref} est-elle la préfecture ?`,d.nom,others(deps.map(x=>x.nom),d.nom));
+    }
+    if(REG[d.r])add("geo","dep",3,2,`Dans quelle région se trouve le département « ${d.nom} » ?`,REG[d.r],others(Object.values(REG),REG[d.r]));
+  });
+  /* Éléments chimiques */
+  const els=ELEMS.split(",").map((x,i)=>{const[s,n]=x.split(" ");return{s,n,z:i+1}});
+  const facile=["H","O","C"],moyen=["Fe","Cu","Zn","Ag","Au","Hg","Pb","Sn","Ni","U","Pt","I"];
+  els.forEach(e=>{
+    const t=facile.includes(e.s)?1:(e.z<=20||moyen.includes(e.s))?2:3;
+    const proches=els.filter(x=>x.s[0]===e.s[0]&&x!==e);
+    const ds=uniq([...sh(proches.map(x=>x.s)),...sh(els.map(x=>x.s))]).filter(x=>x!==e.s).slice(0,3);
+    add("sci","elem",2,t,`Quel est le symbole chimique de l'élément « ${e.n.toLowerCase()} » ?`,e.s,ds);
+    const dn=uniq([...sh(proches.map(x=>x.n)),...sh(els.filter(x=>x.z<=56).map(x=>x.n))]).filter(x=>x!==e.n).slice(0,3);
+    add("sci","elem",2,t,`Quel élément chimique a pour symbole « ${e.s} » ?`,e.n,dn);
+    if(e.z<=54)add("sci","elem",2,3,`Quel est le numéro atomique de l'élément « ${e.n.toLowerCase()} » ?`,e.z,near(e.z,[1,2,3,4,6,8]));
+  });
+  /* Dates */
+  lines(DATES).forEach(l=>{
+    const[q,y,d]=l.split("|"),yy=+y,span=yy>1900?12:yy>1500?30:60,s=new Set();
+    while(s.size<3){const v=yy+R(2*span+1)-span;if(v!==yy&&v<=2026&&v>0)s.add(v)}
+    add("hist","date",4,+d,q,yy,[...s]);
+  });
+  /* Présidents */
+  PRES.forEach(([a,b,n])=>{for(let y=a;y<=b;y++)add("hist","pres",1,y>=2008?1:2,`Qui était président de la République française le 1er janvier ${y} ?`,n,others(PRES.map(p=>p[2]),n))});
+  /* Œuvres */
+  const oe=lines(OEUVRES).map(l=>{const[g,t,c,d]=l.split("|");return{g,t,c,d:+d}});
+  const Q1={L:t=>`Qui a écrit « ${t} » ?`,T:t=>`Qui a peint « ${t} » ?`,M:t=>`Qui a composé « ${t} » ?`,F:t=>`Qui a réalisé le film « ${t} » ?`};
+  const Q2={L:c=>`Laquelle de ces œuvres a été écrite par ${c} ?`,T:c=>`Laquelle de ces œuvres a été peinte par ${c} ?`,M:c=>`Laquelle de ces œuvres a été composée par ${c} ?`,F:c=>`Lequel de ces films a été réalisé par ${c} ?`};
+  oe.forEach(o=>{
+    const grp=oe.filter(x=>x.g===o.g);
+    add("arts","auteur",3,o.d,Q1[o.g](o.t),o.c,others(grp.map(x=>x.c),o.c));
+    add("arts","oeuvre",2,o.d,Q2[o.g](o.c),o.t,others(grp.filter(x=>x.c!==o.c).map(x=>x.t),o.t));
+  });
+  /* Animaux */
+  const an=ANIMAUX.split(";").map(x=>{const[n,p,tp,c,tc]=x.split("|");return{n,p,tp:+tp,c,tc:+tc}});
+  an.forEach(a=>{
+    if(a.p)add("nat","petit",1,a.tp,`Comment appelle-t-on le petit ${de(a.n)} ?`,maj("le "+a.p).replace(/^Le ([aeiouéâ])/,"L'$1"),others(an.filter(x=>x.p&&x.p!==a.p).map(x=>maj("le "+x.p).replace(/^Le ([aeiouéâ])/,"L'$1")),""));
+    if(a.c)add("nat","cri",1,a.tc,`Lequel de ces animaux ${a.c} ?`,maj(a.n),others(an.filter(x=>x.c!==a.c).map(x=>maj(x.n)),""));
+  });
+  /* Sport */
+  const vainq=uniq(CDM.map(x=>x[1]).concat(["Pays-Bas","Hongrie","Suède","Croatie"])),hotes=uniq(CDM.map(x=>x[2]));
+  CDM.forEach(([y,v,h])=>{
+    add("sport","cdm",1,(y===1998||y===2018)?1:y>=1998?2:3,`Quel pays a remporté la Coupe du monde de football ${y} ?`,v,others(vainq,v));
+    add("sport","cdm",1,y>=1998?2:3,`Quel pays a accueilli la Coupe du monde de football ${y} ?`,h,others(hotes,h));
+  });
+  JO.forEach(([y,v])=>add("sport","jo",1,y===2024?1:y>=2000?2:3,`Quelle ville a accueilli les Jeux olympiques d'été de ${y} ?`,v,others(JO.map(x=>x[1]),v)));
+  /* Anglais */
+  const en=ANGLAIS.split(";").map(x=>x.split("|"));
+  en.forEach(([w,t,d])=>add("lang","anglais",2,+d,`Que signifie le mot anglais « ${w} » ?`,maj(t),others(en.map(x=>maj(x[1])),maj(t))));
+  /* Monnaies */
+  const mo=MONNAIES.split(";").map(x=>x.split("|"));
+  mo.forEach(([p,m,d])=>add("div","monnaie",1,+d,`Quelle est la monnaie ${de(p)} ?`,m,others(mo.map(x=>x[1]),m)));
+  /* Questions rédigées */
+  lines(DIVERS).forEach(l=>{const[c,t,q,ok,...wr]=l.split("|");add(c,"main",c==="geo"?2:3,+t,q,ok,wr)});
+  /* Calcul */
+  for(let a=2;a<=20;a++)for(let b=a;b<=20;b++)add("calc","mult",2,b<=10?1:a<=10?2:3,`Combien font ${a} × ${b} ?`,fr(a*b),near(a*b,[a,b,10,2,1]).map(fr));
+  for(let a=13;a<990;a+=29)for(let b=17;b<900;b+=41){
+    const t=Math.max(a,b)<100?1:Math.max(a,b)<400?2:3;
+    add("calc","add",1,t,`Combien font ${a} + ${b} ?`,fr(a+b),near(a+b,[1,10,20,100,11]).map(fr));
+    if(a>b+5)add("calc","add",1,t,`Combien font ${a} − ${b} ?`,fr(a-b),near(a-b,[1,10,20,100,11]).map(fr));
+  }
+  for(let n=11;n<=40;n++)add("calc","carre",1,n<=20?2:3,`Combien vaut ${n} au carré ?`,fr(n*n),near(n*n,[n,10,20,1,2*n]).map(fr));
+  [10,20,25,50,75,5,15,30,40,60].forEach((p,i)=>[40,60,80,120,160,200,240,300,360,400,480,600,800,1200,1500,2000,2400,3600,4800,6000].forEach(n=>{
+    const v=n*p/100,simple=i<4;
+    add("calc","pct",2,simple?(n<=400?1:2):(n<=400?2:3),`Combien font ${p} % de ${fr(n)} ?`,fr(v),near(v,[n/20,n/10,n/5]).map(fr));
+  }));
+  const rom=n=>{let s="";for(const[v,r]of[[1000,"M"],[900,"CM"],[500,"D"],[400,"CD"],[100,"C"],[90,"XC"],[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]])while(n>=v){s+=r;n-=v}return s};
+  for(let n=4;n<=1500;n++){
+    const t=n<=30?1:n<=200?2:3,ds=near(n,[1,2,5,10,20,50,100]);
+    add("calc","romain",2,t,`Quel nombre s'écrit « ${rom(n)} » en chiffres romains ?`,fr(n),ds.map(fr));
+    add("calc","romain",2,t,`Comment écrit-on ${fr(n)} en chiffres romains ?`,rom(n),ds.map(rom));
+  }
+}
+buildBank();
+const total=cats=>cats.reduce((s,c)=>s+Object.values(B[c]).reduce((x,p)=>x+p.qs.length,0),0);
+
+/* ---------- Tirage aléatoire sans répétition ---------- */
+const hash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h};
+let vues=[];
+try{vues=JSON.parse(localStorage.getItem("qvgdm_vues")||"[]")}catch(e){}
+let vuesSet=new Set(vues),lastCat="";
+function noter(q){
+  const h=hash(q.q);vues.push(h);if(vues.length>1500)vues=vues.slice(-1000);
+  vuesSet=new Set(vues);
+  try{localStorage.setItem("qvgdm_vues",JSON.stringify(vues))}catch(e){}
+}
+function wpick(arr,w){let t=arr.reduce((s,x)=>s+w(x),0),r=Math.random()*t;for(const x of arr){r-=w(x);if(r<=0)return x}return arr[arr.length-1]}
+function tirer(tier){
+  const cats=Object.keys(CATS).filter(c=>c!==lastCat);
+  for(const strict of[true,false])for(let i=0;i<40;i++){
+    const c=wpick(cats,k=>CATS[k][1]);
+    const pools=Object.values(B[c]).map(p=>({w:p.w,qs:p.qs.filter(q=>q.t===tier&&(!strict||!vuesSet.has(hash(q.q))))})).filter(p=>p.qs.length);
+    if(!pools.length)continue;
+    const p=wpick(pools,x=>x.w),q=p.qs[R(p.qs.length)];
+    lastCat=c;noter(q);return q;
+  }
+}
+
+/* ---------- Jeu ---------- */
+const M=[200,300,500,800,1500,3000,6000,12000,24000,48000,72000,100000,150000,300000,1000000];
+const SAFE=[4,9],L="ABCD";
+const $=s=>document.querySelector(s);
+const eur=n=>fr(n)+" €";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let lvl,used,cur,locked,info,arm,vueCourante="menu";
+
+/* ---------- Musique et bruitages (compositions originales, Web Audio) ---------- */
+let AC=null,sortie=null,geste=false,muet=false,bedT=null;
+try{muet=localStorage.getItem("qvgdm_muet")==="1"}catch(e){}
+function ac(){
+  if(muet||!geste)return null;
+  if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();sortie=AC.createGain();sortie.gain.value=.5;sortie.connect(AC.destination)}catch(e){return null}}
+  if(AC.state==="suspended")AC.resume();
+  return AC;
+}
+function note(f,t0,d,type,v){
+  const a=ac();if(!a)return;
+  const o=a.createOscillator(),g=a.createGain(),t=a.currentTime+t0;
+  o.type=type||"sine";o.frequency.value=f;
+  g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(v||.2,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g);g.connect(sortie);o.start(t);o.stop(t+d+.05);
+}
+function stopBed(){clearInterval(bedT);bedT=null}
+function startBed(){
+  stopBed();let b=0;
+  const base=lvl<5?55:lvl<10?58.27:61.74;
+  const tick=()=>{
+    note(base,0,.25,"sine",.5);note(base,.28,.2,"sine",.3);
+    if(b%4===0)[2,2.378,2.997].forEach(m=>note(base*m,0,3.8,"triangle",.05));
+    if(b%8===6)note(base*8,0,.5,"sine",.03);
+    b++;
+  };
+  tick();bedT=setInterval(tick,1000);
+}
+function sfx(k){
+  if(k==="question"){note(330,0,.12,"triangle",.15);note(440,.12,.12,"triangle",.15);note(660,.24,.3,"triangle",.15)}
+  if(k==="verrou")for(let i=0;i<14;i++)note(196*(1+i*.03),i*.12,.1,"triangle",.12);
+  if(k==="juste"){[523,659,784,1047].forEach((f,i)=>note(f,i*.1,.35,"triangle",.18));[523,659,784].forEach(f=>note(f,.45,1,"sine",.1))}
+  if(k==="faux")[392,311,233,156].forEach((f,i)=>note(f,i*.25,.4,"sawtooth",.08));
+  if(k==="joker"){note(880,0,.08,"square",.06);note(1175,.09,.14,"square",.06)}
+  if(k==="million"){[523,659,784,1047,784,1047,1319].forEach((f,i)=>note(f,i*.14,.4,"triangle",.18));[523,659,784,1047].forEach(f=>note(f,1.1,2.2,"sine",.12))}
+}
+function blabla(ms){for(let t=0;t<ms/1000;t+=.09)note(130+R(90),t,.06,"square",.025)}
+["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{geste=true},{capture:true}));
+
+/* ---------- Animateur ---------- */
+const PHRASES={
+accueil:["Bienvenue ! Ici, on ne gagne pas vraiment des millions, mais on repart avec la fierté. C'est déjà pas mal.","Installez-vous. Le fauteuil est virtuel, mais la pression est bien réelle.","Bonsoir ! Non, je ne souffle pas les réponses. Enfin, pas gratuitement.","Quinze questions, trois jokers, zéro excuse. C'est parti."],
+bonne:["Bonne réponse ! Je savais que vous le saviez. Enfin, j'espérais.","Exact ! Votre cerveau vient de justifier son abonnement.","Bravo ! À ce rythme-là, il va falloir prévenir votre banquier.","C'est juste ! Vous le saviez ou c'était un coup de chance ? Ne répondez pas.","Bien joué ! Quelqu'un a écouté à l'école, visiblement.","Correct ! Je commence à m'inquiéter pour la cagnotte.","Oui ! Même moi, j'avais un doute. Et pourtant j'ai les réponses.","Parfait ! Continuez comme ça et je vous cède ma place."],
+suspense:["C'est votre dernier mot ?","Vous êtes sûr ? Vraiment sûr ? Sûr de sûr ?","Je ne dis rien. Mon visage non plus. Regardez comme il ne dit rien.","Hmm. Intéressant. Très intéressant. Ou pas.","On va vérifier ça. Respirez, ça ne coûte rien.","Ah, cette réponse-là… Je la note. On verra.","Ne traînons pas trop, j'ai un rôti au four."],
+j5:["Deux réponses en moins. Il vous reste une chance sur deux et aucune excuse.","Un joker ! Sage décision. Ou aveu de faiblesse. Je ne juge pas."],
+jp:["Votre ami décroche. Il était en train de faire la vaisselle, il est ravi.","Un joker ! Sage décision. Ou aveu de faiblesse. Je ne juge pas."],
+ju:["Le public a voté. Rappel : le public a aussi voté pour la coupe mulet dans les années 80.","Un joker ! Sage décision. Ou aveu de faiblesse. Je ne juge pas."],
+mauvaise:["Aïe. C'était presque ça. À trois réponses près.","Dommage ! Mais vous avez perdu avec beaucoup d'élégance.","Raté. Consolez-vous : l'argent ne fait pas le bonheur. Surtout celui qu'on n'a pas gagné.","Mauvaise réponse. Je compatis. Sincèrement. Pendant au moins quatre secondes."],
+stop:["Vous partez déjà ? Un tiens vaut mieux que deux tu l'auras, comme on dit.","Sage décision. Les meilleurs savent s'arrêter. Les autres aussi, mais plus tard."],
+million:["Un million ! Je… je n'étais pas prêt. Qui a les clés du coffre ?"]};
+const ANIMS=["oui","non","suspense","joie","sceptique"];
+let dejaDit=new Set(),dits=0,parleT=null;
+function dire(cat){
+  const l=PHRASES[cat];let c=l.filter(p=>!dejaDit.has(p));if(!c.length)c=l;
+  const p=c[R(c.length)],t=$("#tete"),ms=Math.min(4000,Math.max(1600,p.length*45));
+  dejaDit.add(p);dits++;
+  $("#bulle").textContent=p;
+  t.classList.add("parle");clearTimeout(parleT);parleT=setTimeout(()=>t.classList.remove("parle"),ms);
+  blabla(ms);if(h3)h3.talk(ms);
+}
+function hote(a){if(h3){h3.play(a);return}const t=$("#tete");t.classList.remove(...ANIMS);void t.offsetWidth;t.classList.add(a)}
+
+/* Personnage 3D (three.js). Si le WebGL n'est pas disponible, la photo reste affichée. */
+let h3=null;
+function init3D(){
+  if(typeof THREE==="undefined")return null;
+  const box=$("#hex");let rd;
+  try{rd=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(e){return null}
+  const taille=()=>{rd.setPixelRatio(Math.min(window.devicePixelRatio||1,2));rd.setSize(box.clientWidth||150,box.clientHeight||180,false)};
+  taille();window.addEventListener("resize",taille);
+  box.appendChild(rd.domElement);$("#tete").hidden=true;
+  const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(32,5/6,.1,50);
+  cam.position.set(0,-.15,5.8);cam.lookAt(0,-.15,0);
+  sc.add(new THREE.AmbientLight(0xffffff,.6));
+  const l1=new THREE.DirectionalLight(0xffffff,.85);l1.position.set(2,3,4);sc.add(l1);
+  const l2=new THREE.DirectionalLight(0xffffff,.5);l2.position.set(-3,1,-2);sc.add(l2);
+  const mat=(c,r)=>new THREE.MeshStandardMaterial({color:c,roughness:r==null?.75:r});
+  const peau=mat(0xd9a07c),barbe=mat(0xc4957b),cheveux=mat(0x1d1a18),veste=mat(0x161616),blanc=mat(0xffffff,.3),levre=mat(0x7a3b33);
+  const noir=new THREE.MeshBasicMaterial({color:0x111111}),bouche=new THREE.MeshBasicMaterial({color:0x2a0808}),jaune=new THREE.MeshBasicMaterial({color:0xffcc00});
+  const S=(r,m,x,y,z)=>{const o=new THREE.Mesh(new THREE.SphereGeometry(r,32,24),m);o.scale.set(x||1,y||1,z||1);return o};
+  const root=new THREE.Group();sc.add(root);
+  const corps=S(1.5,veste,1.25,.9,.8);corps.position.y=-2.25;root.add(corps);
+  const cou=new THREE.Mesh(new THREE.CylinderGeometry(.32,.4,.8,20),mat(0xc79a80));cou.position.y=-1.1;root.add(cou);
+  const col=new THREE.Mesh(new THREE.TorusGeometry(.5,.16,12,24),veste);col.rotation.x=Math.PI/2;col.position.y=-1.38;root.add(col);
+  const logo=new THREE.Mesh(new THREE.BoxGeometry(.5,.16,.04),jaune);logo.position.set(.5,-1.55,.99);logo.rotation.x=-.5;root.add(logo);
+  const tete=new THREE.Group();root.add(tete);
+  /* Arrière du crâne (couleur des cheveux), puis le visage : la photo plaquée sur une surface bombée et déformable */
+  const poil=mat(0x2e2e33,.9);
+  const crane=S(1,poil,.7,1.06,.8);crane.position.z=-.05;tete.add(crane);
+  /* Cheveux courts en épis, en volume : trois rangées de mèches sur le dessus et l'arrière du crâne */
+  [[.28,.98,.19,.11],[-.05,1,.23,.12],[-.4,.95,.21,.12]].forEach(([z,k,h,r],row)=>{
+    for(let a=-60;a<=60;a+=12){
+      const an=(a+(row%2?6:0))*Math.PI/180,m=new THREE.Mesh(new THREE.ConeGeometry(r,h,7),poil);
+      m.position.set(.7*k*Math.sin(an),1.06*k*Math.cos(an),z);m.rotation.set(z>0?.35:z<-.2?-.45:0,0,-an*.85);tete.add(m);
+    }
+  });
+  const FW=1.652,FH=2.374,CX=0,CY=0;
+  const geo=new THREE.PlaneGeometry(FW,FH,44,64),pos=geo.attributes.position,n=pos.count,base=new Float32Array(n*3),F=[];
+  const ga=(u,w,cu,cw,su,sw)=>Math.exp(-Math.pow((u-cu)/su,2)-Math.pow((w-cw)/sw,2));
+  const ss=(a,z,x)=>{x=Math.min(1,Math.max(0,(x-a)/(z-a)));return x*x*(3-2*x)};
+  for(let i=0;i<n;i++){
+    const x=pos.getX(i),y=pos.getY(i),u=x/FW+.5,w=.5-y/FH;
+    base[i*3]=x;base[i*3+1]=y;base[i*3+2]=.8*Math.sqrt(Math.max(0,1-Math.pow((x-CX)/.74,2)-Math.pow((y-CY)/1.11,2)));
+    F.push({jaw:ss(.72,.78,w),sl:ga(u,w,.48,.71,.07,.05),sr:ga(u,w,.77,.71,.07,.05),bl:ga(u,w,.42,.42,.11,.04),br:ga(u,w,.76,.42,.11,.04),ul:u-.42,ur:u-.76,oe:ga(u,w,.44,.475,.10,.035)+ga(u,w,.75,.475,.10,.035),ey:(w-.475)*FH});
+  }
+  let actif=true;
+  const tex=new THREE.TextureLoader().load("visage.webp",()=>{visage.visible=true},undefined,()=>{actif=false;rd.domElement.remove();$("#tete").hidden=false;h3=null});
+  const visage=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:tex,transparent:true}));
+  visage.position.set(-CX,-CY,0);visage.visible=false;visage.renderOrder=1;tete.add(visage);
+  const trou=new THREE.Mesh(new THREE.CircleGeometry(.5,24),new THREE.MeshBasicMaterial({color:0x2a0808,transparent:true}));
+  trou.renderOrder=2;visage.add(trou);
+  const reduit=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const DUR={oui:900,non:900,suspense:1800,joie:1100,sceptique:1800};
+  const st={anim:null,t0:0,fin:0,clin:0,prochain:1500};
+  const c={hx:0,hy:0,hz:0,py:0,sm:0,op:0,bl:0,br:0,rot:0,ey:1,lk:0,zm:1};
+  function frame(now){
+    if(!actif)return;
+    requestAnimationFrame(frame);
+    const t=now/1000,v={hx:0,hy:0,hz:0,py:0,sm:0,op:0,bl:0,br:0,rot:0,ey:1,lk:0,zm:1};let tour=0;
+    if(!reduit){v.hx=Math.sin(t*.8)*.03;v.hy=Math.sin(t*.5)*.12;v.py=Math.sin(t*1.6)*.02;v.lk=Math.sin(t*.4)*.03}
+    if(now>st.prochain){st.clin=now;st.prochain=now+2000+Math.random()*3000}
+    if(now-st.clin<130)v.ey=.1;
+    if(now<st.fin){v.op=.15+Math.abs(Math.sin(t*11))*.75;v.bl=v.br=.04}
+    if(st.anim){
+      const p=(now-st.t0)/DUR[st.anim],e=Math.sin(Math.min(p,1)*Math.PI),k=reduit?0:1;
+      if(p>=1)st.anim=null;
+      else if(st.anim==="oui"){v.hx+=k*Math.sin(p*6*Math.PI)*.35;v.sm=1;v.bl=v.br=.12}
+      else if(st.anim==="non"){v.hy=k*Math.sin(p*6*Math.PI)*.4;v.sm=-1;v.rot=.45;v.bl=v.br=.05}
+      else if(st.anim==="suspense"){v.zm=1+.22*p*k;v.ey=.45;v.bl=v.br=-.08;v.rot=-.4;v.lk=Math.sin(p*10*Math.PI)*.07;v.sm=.02;v.hy=0}
+      else if(st.anim==="joie"){v.py+=k*Math.abs(Math.sin(p*2*Math.PI))*.3;tour=k*p*2*Math.PI;v.sm=1;v.op=Math.max(v.op,.6);v.ey=1.25;v.bl=v.br=.1}
+      else if(st.anim==="sceptique"){v.hz=.25*e;v.hy=.25*e;v.bl=.2*e;v.br=-.08*e;v.rot=-.15*e;v.sm=-.3}
+    }
+    for(const key in c)c[key]+=(v[key]-c[key])*.25;
+    tete.rotation.set(c.hx,c.hy+tour,c.hz);tete.position.y=c.py;root.scale.setScalar(c.zm);
+    const fe=Math.min(1,Math.max(0,1-c.ey));
+    for(let i=0;i<n;i++){
+      const f=F[i];
+      const dy=-c.op*.22*f.jaw+c.sm*.07*(f.sl+f.sr)+f.bl*(c.bl*.6+c.rot*1.2*f.ul)+f.br*(c.br*.6-c.rot*1.2*f.ur)+fe*f.ey*f.oe;
+      pos.setXYZ(i,base[i*3]+c.sm*.03*(f.sr-f.sl),base[i*3+1]+dy,base[i*3+2]);
+    }
+    pos.needsUpdate=true;
+    trou.visible=c.op>.05;trou.scale.set(.38,Math.max(.01,c.op*.2),1);trou.position.set(.12,-.53-c.op*.1,.686);
+    rd.render(sc,cam);
+  }
+  requestAnimationFrame(frame);
+  return{play(a){st.anim=a;st.t0=performance.now()},talk(ms){st.fin=performance.now()+ms}};
+}
+function joker(k){sfx("joker");hote("sceptique");dire(k)}
+function start(){lvl=0;used={};dits=0;dire("accueil");next()}
+function next(){
+  if(vueCourante!=="millions")return;
+  const q=tirer(lvl<5?1:lvl<10?2:3);
+  cur={q:q.q,c:q.c,a:sh(q.a.map((t,i)=>({t,ok:i===0}))),hidden:[]};
+  locked=false;info="";arm=false;draw();
+  sfx("question");startBed();
+}
+function draw(){
+  const acquis=lvl>0?M[lvl-1]:0;
+  $("#app").innerHTML=`<div class="game"><div class="main">
+  <div class="jokers">
+    <button class="joker" id="j5" ${used.f?"disabled":""}>50:50</button>
+    <button class="joker" id="jp" ${used.p?"disabled":""}>Appel à un ami</button>
+    <button class="joker" id="ju" ${used.u?"disabled":""}>Avis du public</button>
+  </div>
+  <div class="meta"><span>Question ${lvl+1} sur 15</span><span class="cat">${CATS[cur.c][0]}</span></div>
+  <div class="qbox">${esc(cur.q)}</div>
+  <div class="prize">${eur(M[lvl])}</div>
+  <div class="ans">${cur.a.map((x,i)=>`<button class="a ${cur.hidden.includes(i)?"hide":""}" data-i="${i}" ${locked?"disabled":""}><span><b>${L[i]}</b>${esc(x.t)}</span></button>`).join("")}</div>
+  <div class="info" id="info" aria-live="polite">${info}</div>
+  <button class="walk ${arm?"arm":""}" id="walk">${arm?"Confirmer : je pars avec "+eur(acquis):"Je m'arrête et je garde "+eur(acquis)}</button>
+  </div>
+  <ol class="ladder">${M.map((m,i)=>`<li class="${SAFE.includes(i)?"safe":""} ${i===lvl?"cur":""} ${i<lvl?"done":""}"><span>${i+1}</span><span>${eur(m)}</span></li>`).join("")}</ol></div>`;
+  document.querySelectorAll(".a").forEach(b=>b.onclick=()=>answer(+b.dataset.i,b));
+  $("#j5").onclick=fifty;$("#jp").onclick=phone;$("#ju").onclick=crowd;
+  $("#walk").onclick=()=>{if(locked)return;if(arm)finish("stop",acquis);else{arm=true;hote("sceptique");draw()}};
+}
+const faux=()=>cur.a.map((x,i)=>i).filter(i=>!cur.a[i].ok&&!cur.hidden.includes(i));
+function fifty(){if(locked||used.f)return;used.f=1;joker("j5");sh(faux()).slice(0,2).forEach(i=>cur.hidden.push(i));draw()}
+function phone(){
+  if(locked||used.p)return;used.p=1;joker("jp");
+  const good=cur.a.findIndex(x=>x.ok),p=Math.max(.9-lvl*.04,.4);
+  const pick=Math.random()<p?good:sh(faux())[0];
+  info="Votre ami hésite, puis répond : « Je dirais la "+L[pick]+(p>.7?", j'en suis presque sûr. »":", mais je n'en suis pas certain. »");
+  draw();
+}
+function crowd(){
+  if(locked||used.u)return;used.u=1;joker("ju");
+  const vis=cur.a.map((x,i)=>i).filter(i=>!cur.hidden.includes(i)),good=cur.a.findIndex(x=>x.ok);
+  const top=Math.round(Math.max(80-lvl*3.5,35)),autres=vis.filter(i=>i!==good),res={};
+  let reste=100-top;
+  autres.forEach((i,k)=>{const s=k===autres.length-1?reste:Math.round(Math.random()*reste*.7);res[i]=s;reste-=s});
+  res[good]=top;
+  info=`<div class="bars">${vis.map(i=>`<div><div class="bar" style="height:${Math.max(res[i],4)*.9}px">${res[i]} %</div>${L[i]}</div>`).join("")}</div>`;
+  draw();
+}
+function answer(i,btn){
+  if(locked)return;locked=true;
+  const bs=document.querySelectorAll(".a");
+  bs.forEach(b=>b.disabled=true);
+  btn.classList.add("sel");
+  stopBed();sfx("verrou");hote("suspense");
+  const suspense=dits<3||Math.random()<.4;
+  if(suspense)dire("suspense");
+  setTimeout(()=>{
+    if(vueCourante!=="millions")return;
+    const good=cur.a.findIndex(x=>x.ok);
+    btn.classList.remove("sel");
+    bs[good].classList.add("ok");
+    if(i!==good){btn.classList.add("ko");sfx("faux");hote("non");dire("mauvaise")}
+    else{
+      sfx(lvl===14?"million":"juste");hote(SAFE.includes(lvl)||lvl===14?"joie":"oui");
+      if(lvl===14)dire("million");else if(!suspense&&Math.random()<.6)dire("bonne");
+    }
+    setTimeout(()=>{
+      if(vueCourante!=="millions")return;
+      if(i!==good)finish("lose",lvl>9?M[9]:lvl>4?M[4]:0);
+      else if(lvl===14)finish("win",M[14]);
+      else{lvl++;next()}
+    },i!==good?3200:2400);
+  },1800);
+}
+function finish(type,gain){
+  const bonne=cur.a.find(x=>x.ok).t;
+  stopBed();if(type==="stop")dire("stop");
+  const t={win:["Vous êtes millionnaire","Quinze bonnes réponses d'affilée, sans faute."],
+    lose:["Mauvaise réponse","La bonne réponse était : "+bonne+"."],
+    stop:["Vous vous arrêtez là","La bonne réponse était : "+bonne+"."]}[type];
+  $("#app").innerHTML=`<div class="end"><h2>${t[0]}</h2><div class="gain">${eur(gain)}</div><p>${esc(t[1])}</p><button class="cta" id="again">Rejouer</button></div>`;
+  $("#again").onclick=start;$("#again").focus();
+}
+if(typeof document!=="undefined"){
+  const all=total(Object.keys(B)),culture=total(Object.keys(B).filter(c=>c!=="calc"));
+  const tete=$("#tete"),son=$("#son");
+  tete.addEventListener("animationend",e=>{if(e.target===tete)tete.classList.remove(...ANIMS)});
+  const majSon=()=>{son.textContent=muet?"Remettre le son":"Couper le son"};
+  son.onclick=()=>{muet=!muet;if(muet&&AC)AC.suspend();try{localStorage.setItem("qvgdm_muet",muet?"1":"0")}catch(e){}majSon()};
+  majSon();
+  $("#banque").textContent=`Banque de ${fr(all)} questions tirées au hasard, dont ${fr(culture)} de culture générale. Une question déjà posée ne revient pas avant longtemps.`;
+  /* Menu : une vue par jeu, choisie par l'ancre de l'adresse (#millions, #plateforme) */
+  let pret3d=false;
+  const TITRES={menu:"Choisissez votre jeu",millions:"Qui veut gagner des millions ?",plateforme:"Super Animateur"};
+  const vue=()=>{
+    const h=(location.hash||"").replace("#",""),v=TITRES[h]&&h!=="menu"?h:"menu";
+    vueCourante=v;
+    Object.keys(TITRES).forEach(k=>{$("#vue-"+k).hidden=k!==v});
+    $("#retour").hidden=v==="menu";$("#titre").textContent=TITRES[v];
+    stopBed();
+    if(v==="millions"){if(!pret3d){pret3d=true;try{h3=init3D()}catch(e){h3=null}}start()}
+    if(window.Plateforme){if(v==="plateforme"){window.Plateforme.entrer();$("#pf").focus({preventScroll:true})}else window.Plateforme.sortir()}
+  };
+  window.addEventListener("hashchange",vue);
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",vue);else setTimeout(vue,0);
+}
+</script>
+<script src="plateforme.js"></script>
+
+</body></html>
